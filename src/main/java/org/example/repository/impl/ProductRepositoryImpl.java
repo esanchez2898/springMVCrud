@@ -28,7 +28,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         Predicate predicate = criteriaBuilder.equal(root.get("category").get("id"), categoryId);
 
-        criteriaQuery.where(predicate).distinct(true);
+        criteriaQuery.select(root).where(predicate);//.distinct(true);
 
         return entityManager.createQuery(criteriaQuery).getResultList();
 

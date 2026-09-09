@@ -95,7 +95,7 @@ public class TempConverterImpl implements TempConverter {
 
         if(categoryIdOptional.isPresent()) {
             Integer categoryId = categoryIdOptional.get();
-            List<ProductEntity> productList = productRepository.findByCategoryId(categoryId);
+            List<ProductEntity> productList = productRepository.findAllByCategoryId(categoryId);
             returnValue.setProducts(productList);
         }
 
