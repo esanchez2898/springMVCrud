@@ -25,5 +25,4 @@ public class CategoryEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "category") // private CategoryEntity category;
     private List<ProductEntity> products;
 
-
 }

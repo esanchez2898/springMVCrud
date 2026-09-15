@@ -19,6 +19,63 @@ public class ProductRepositoryImpl implements ProductRepository {
     private EntityManager entityManager;
 
     @Override
+    public List<ProductEntity> findAll() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
+        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
+
+        root.fetch("category", JoinType.LEFT);
+
+        criteriaQuery.select(root);//.distinct(true);
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+
+    @Override
+    public Optional<ProductEntity> findById(Integer id) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
+        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
+
+        root.fetch("category", JoinType.LEFT);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("id"), id);
+
+        criteriaQuery.where(predicate);//.distinct(true);
+        List<ProductEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
+
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resultList.getFirst());
+        }
+
+    }
+
+
+    @Override
+    public Optional<ProductEntity> findByName(String productName) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
+        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
+
+        root.fetch("category", JoinType.LEFT);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("name"), productName);
+
+        criteriaQuery.where(predicate);//.distinct(true);
+        List<ProductEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
+
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resultList.getFirst());
+        }
+    }
+
+
+    @Override
     public List<ProductEntity> findAllByCategoryId(Integer categoryId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
@@ -34,59 +91,6 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     }
 
-    @Override
-    public Optional<ProductEntity> findByName(String productName) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
-        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
-
-        root.fetch("category", JoinType.LEFT);
-
-        Predicate predicate = criteriaBuilder.equal(root.get("name"), productName);
-
-        criteriaQuery.where(predicate).distinct(true);
-        List<ProductEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
-
-        if (resultList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultList.getFirst());
-        }
-    }
-
-    @Override
-    public List<ProductEntity> findAll() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
-        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
-
-        root.fetch("category", JoinType.LEFT);
-
-        criteriaQuery.select(root).distinct(true);
-
-        return entityManager.createQuery(criteriaQuery).getResultList();
-    }
-
-    @Override
-    public Optional<ProductEntity> findById(Integer id) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
-        Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
-
-        root.fetch("category", JoinType.LEFT);
-
-        Predicate predicate = criteriaBuilder.equal(root.get("id"), id);
-
-        criteriaQuery.where(predicate).distinct(true);
-        List<ProductEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
-
-        if (resultList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultList.getFirst());
-        }
-
-    }
 
     @Override
     public ProductEntity save(ProductEntity productEntity) {
@@ -100,6 +104,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         return productEntity;
     }
+
 
     @Override
     public void deleteById(Integer productId) {
