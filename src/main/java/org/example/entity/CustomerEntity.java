@@ -21,6 +21,8 @@ public class CustomerEntity implements Serializable {
     @Column(nullable = false, unique = true, length = 12)
     private String customerPhone;
 
+
+
     @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
