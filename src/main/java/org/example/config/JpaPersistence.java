@@ -87,6 +87,7 @@ public class JpaPersistence {
 
         // Specifies the SQL dialect for PostgreSQL.
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        properties.setProperty("hibernate.show_sql", "true");
 
         return properties;
     }

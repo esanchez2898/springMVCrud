@@ -24,7 +24,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         CriteriaQuery<ProductEntity> criteriaQuery = criteriaBuilder.createQuery(ProductEntity.class);
         Root<ProductEntity> root = criteriaQuery.from(ProductEntity.class);
 
-        root.fetch("category", JoinType.LEFT);
+        root.fetch("category", JoinType.INNER);
 
         criteriaQuery.select(root);//.distinct(true);
 

@@ -26,3 +26,5 @@ public class CategoryEntity implements Serializable {
     private List<ProductEntity> products;
 
 }
+
+
