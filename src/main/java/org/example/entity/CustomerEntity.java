@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
@@ -21,7 +22,9 @@ public class CustomerEntity implements Serializable {
     @Column(nullable = false, unique = true, length = 12)
     private String customerPhone;
 
-
+    @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "address_id", nullable = false)
+    private AddressEntity address;
 
     @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
