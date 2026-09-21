@@ -3,13 +3,16 @@ package org.example.service.impl;
 import org.example.converter.TempConverter;
 import org.example.dto.AddressDto;
 import org.example.entity.AddressEntity;
+import org.example.exception.exceptions.AddressNotFoundException;
 import org.example.repository.AddressRepository;
 import org.example.service.AddressService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AddressServiceImpl implements AddressService {
 
 
@@ -36,28 +39,44 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Optional<AddressDto> getAddressById(Integer addressId) {
+    public AddressDto getAddressById(Integer addressId) {
 
-        //AddressEntity returnValue = addressRepository.findById(addressId);
+        Optional<AddressEntity> returnValue = addressRepository.findById(addressId);
 
-        //AddressDto addressDto = converter.entityToDto();
+        if (returnValue.isEmpty()) {
+            throw new AddressNotFoundException("Address was not found");
+        }
 
-
-        return Optional.empty();
+        return converter.entityToDto(returnValue.get());
     }
 
     @Override
     public AddressDto addAddress(AddressDto addressDto) {
-        return null;
+
+        AddressEntity addressEntity = converter.dtoToEntity(addressDto);
+        AddressEntity addressSaved =  addressRepository.save(addressEntity);
+
+        return converter.entityToDto(addressSaved);
     }
 
     @Override
     public AddressDto updateAddress(Integer addressId, AddressDto addressDto) {
-        return null;
+
+        getAddressById(addressId);
+
+        addressDto.setId(addressId);
+
+        AddressEntity addressEntity = converter.dtoToEntity(addressDto);
+        AddressEntity addressSaved = addressRepository.save(addressEntity);
+
+        return converter.entityToDto(addressSaved);
     }
 
     @Override
     public void deleteAddressById(Integer addressId) {
+
+        getAddressById(addressId);
+        addressRepository.deleteById(addressId);
 
     }
 }
