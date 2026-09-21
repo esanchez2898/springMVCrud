@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import org.example.converter.TempConverter;
 import org.example.dto.AddressDto;
 import org.example.dto.CategoryDto;
+import org.example.dto.CustomerDto;
 import org.example.dto.ProductDto;
-import org.example.entity.AddressEntity;
-import org.example.entity.CategoryEntity;
-import org.example.entity.CustomerEntity;
-import org.example.entity.ProductEntity;
+import org.example.entity.*;
 import org.example.exception.exceptions.CategoryNotFoundException;
 import org.example.repository.AddressRepository;
 import org.example.repository.CategoryRepository;
@@ -30,13 +28,17 @@ public class TempConverterImpl implements TempConverter {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
+    private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
 
     @Autowired
-    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository) {
+    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository, AddressRepository addressRepository1) {
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
+        this.addressRepository = addressRepository1;
     }
 
     @Override
@@ -86,6 +88,45 @@ public class TempConverterImpl implements TempConverter {
 
         return returnValue;
     }
+
+    @Override
+    public CustomerDto entityToDto(CustomerEntity customerEntity) {
+        CustomerDto returnValue = modelMapper.map(customerEntity, CustomerDto.class);
+
+        Optional<AddressEntity> addressEntityOptional = Optional.ofNullable(customerEntity.getAddress());
+        Optional<UserEntity> userEntityOptional = Optional.ofNullable(customerEntity.getUser());
+        Optional<CartEntity> cartEntityOptional = Optional.ofNullable(customerEntity.getCart());
+
+        if (addressEntityOptional.isPresent()) {
+            AddressEntity addressEntity = addressEntityOptional.get();
+            Integer addressId = addressEntity.getId();
+            returnValue.setAddressId(addressId);
+        }
+
+        if (userEntityOptional.isPresent()) {
+            UserEntity userEntity = userEntityOptional.get();
+            Integer userId = userEntity.getId();
+            returnValue.setUserId(userId);
+        }
+
+        if (cartEntityOptional.isPresent()) {
+            CartEntity cartEntity = cartEntityOptional.get();
+            Integer cartId = cartEntity.getId();
+            returnValue.setCartId(cartId);
+        }
+
+        return returnValue;
+    }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public ProductEntity dtoToEntity(ProductDto productDto) {
@@ -138,6 +179,41 @@ public class TempConverterImpl implements TempConverter {
             }
 
         }
+        return returnValue;
+    }
+
+    @Override
+    public CustomerEntity dtoToEntity(CustomerDto customerDto) {
+        CustomerEntity returnValue = modelMapper.map(customerDto, CustomerEntity.class);
+
+        Optional<Integer> addressIdOptional = Optional.ofNullable(customerDto.getAddressId());
+        Optional<Integer> userIdOptional = Optional.ofNullable(customerDto.getUserId());
+        Optional<Integer> cartIdOptional = Optional.ofNullable(customerDto.getCartId());
+
+        if (addressIdOptional.isPresent()) {
+            Integer addressId = addressIdOptional.get();
+            AddressEntity addressEntity = addressRepository.findById(addressId).orElse(null);
+            if (addressEntity != null) {
+                returnValue.setAddress(addressEntity);
+            }
+        }
+
+        if (userIdOptional.isPresent()) {
+            Integer userId = userIdOptional.get();
+            UserEntity userEntity = userRepository.findById(userId).orElse(null);
+            if (userEntity != null) {
+                returnValue.setUser(userEntity);
+            }
+        }
+
+        if (cartIdOptional.isPresent()) {
+            Integer cartId = cartIdOptional.get();
+            CartEntity cartEntity = cartRepository.findById(cartId).orElse(null);
+            if (cartEntity != null) {
+                returnValue.setCart(cartEntity);
+            }
+        }
+
         return returnValue;
     }
 }

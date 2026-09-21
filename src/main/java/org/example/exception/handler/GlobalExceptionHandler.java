@@ -1,9 +1,6 @@
 package org.example.exception.handler;
 
-import org.example.exception.exceptions.CategoryNotFoundException;
-import org.example.exception.exceptions.DataNotValidatedException;
-import org.example.exception.exceptions.DuplicateFoundException;
-import org.example.exception.exceptions.ProductNotFoundException;
+import org.example.exception.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -69,6 +66,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateFoundException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateFoundException(DuplicateFoundException exc) {
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        exc.getMessage()),
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AddressNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAddressNotFoundException(AddressNotFoundException exc) {
         return new ResponseEntity<>(
                 new ErrorResponse(
                         LocalDateTime.now(),
