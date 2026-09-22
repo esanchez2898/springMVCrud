@@ -2,16 +2,10 @@ package org.example.converter.impl;
 
 import lombok.AllArgsConstructor;
 import org.example.converter.TempConverter;
-import org.example.dto.AddressDto;
-import org.example.dto.CategoryDto;
-import org.example.dto.CustomerDto;
-import org.example.dto.ProductDto;
+import org.example.dto.*;
 import org.example.entity.*;
 import org.example.exception.exceptions.CategoryNotFoundException;
-import org.example.repository.AddressRepository;
-import org.example.repository.CategoryRepository;
-import org.example.repository.CustomerRepository;
-import org.example.repository.ProductRepository;
+import org.example.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,15 +24,19 @@ public class TempConverterImpl implements TempConverter {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final CartRepository cartRepository;
 
     @Autowired
-    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository, AddressRepository addressRepository1) {
+    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository, AddressRepository addressRepository1, UserRepository userRepository, RoleRepository roleRepository, CartRepository cartRepository) {
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.addressRepository = addressRepository1;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.cartRepository = cartRepository;
     }
 
     @Override
@@ -118,14 +116,22 @@ public class TempConverterImpl implements TempConverter {
         return returnValue;
     }
 
+    @Override
+    public UserDto entityToDto(UserEntity userEntity) {
+        UserDto returnValue = modelMapper.map(userEntity, UserDto.class);
 
+        List<Integer> rolesIds = new ArrayList<>();
 
+        if (userEntity.getRoles() != null) {
+            for (RoleEntity role : userEntity.getRoles()) {
+                rolesIds.add(role.getId());
+            }
+        }
 
+        returnValue.setRolesIds(rolesIds);
 
-
-
-
-
+        return returnValue;
+    }
 
 
     @Override
@@ -213,6 +219,24 @@ public class TempConverterImpl implements TempConverter {
                 returnValue.setCart(cartEntity);
             }
         }
+
+        return returnValue;
+    }
+
+    @Override
+    public UserEntity dtoToEntity(UserDto userDto) {
+
+        UserEntity returnValue = modelMapper.map(userDto, UserEntity.class);
+        List<RoleEntity> roleEntities = new ArrayList<>();
+
+        for (Integer id : userDto.getRolesIds()) {
+            Optional<RoleEntity> roleEntityOptional = roleRepository.findById(id);
+            if (roleEntityOptional.isPresent()) {
+                roleEntities.add(roleEntityOptional.get());
+            }
+        }
+
+        returnValue.setRoles(roleEntities);
 
         return returnValue;
     }

@@ -52,6 +52,27 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<UserEntity> findByEmail(String userEmail) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> root = criteriaQuery.from(UserEntity.class);
+
+        root.fetch("roles", JoinType.INNER);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("email"), userEmail);
+
+        criteriaQuery.where(predicate).distinct(true);
+
+        List<UserEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
+
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resultList.getFirst());
+        }
+    }
+
+    @Override
     public UserEntity save(UserEntity userEntity) {
         if (userEntity.getId() == null) {
             entityManager.persist(userEntity);

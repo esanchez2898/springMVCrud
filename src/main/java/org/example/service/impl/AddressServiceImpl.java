@@ -62,11 +62,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDto updateAddress(Integer addressId, AddressDto addressDto) {
 
-        getAddressById(addressId);
-
+        getAddressById(addressId);          // valida que exista
         addressDto.setId(addressId);
 
-        AddressEntity addressEntity = converter.dtoToEntity(addressDto);
+        AddressEntity addressEntity = converter.dtoToEntity(addressDto);  // ← crea una entidad NUEVA desde el DTO
         AddressEntity addressSaved = addressRepository.save(addressEntity);
 
         return converter.entityToDto(addressSaved);

@@ -1,13 +1,7 @@
 package org.example.converter;
 
-import org.example.dto.AddressDto;
-import org.example.dto.CategoryDto;
-import org.example.dto.CustomerDto;
-import org.example.dto.ProductDto;
-import org.example.entity.AddressEntity;
-import org.example.entity.CategoryEntity;
-import org.example.entity.CustomerEntity;
-import org.example.entity.ProductEntity;
+import org.example.dto.*;
+import org.example.entity.*;
 
 public interface TempConverter {
 
@@ -15,7 +9,7 @@ public interface TempConverter {
     CategoryDto entityToDto(CategoryEntity categoryEntity);
     AddressDto entityToDto(AddressEntity addressEntity);
     CustomerDto entityToDto(CustomerEntity customerEntity);
-    UserDto entityToDto(CustomerEntity customerEntity);
+    UserDto entityToDto(UserEntity userEntity);
 
 
 
@@ -23,6 +17,7 @@ public interface TempConverter {
     CategoryEntity dtoToEntity(CategoryDto categoryDto);
     AddressEntity dtoToEntity(AddressDto addressDto);
     CustomerEntity dtoToEntity(CustomerDto customerDto);
+    UserEntity dtoToEntity(UserDto userDto);
 
 
 
