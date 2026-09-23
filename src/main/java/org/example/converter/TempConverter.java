@@ -10,7 +10,7 @@ public interface TempConverter {
     AddressDto entityToDto(AddressEntity addressEntity);
     CustomerDto entityToDto(CustomerEntity customerEntity);
     UserDto entityToDto(UserEntity userEntity);
-
+    //CartDt entityToDto(UserEntity userEntity);
 
 
     ProductEntity dtoToEntity(ProductDto productDto);
