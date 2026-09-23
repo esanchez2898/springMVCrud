@@ -97,4 +97,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCustomerNotFoundException(CustomerNotFoundException exc) {
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        exc.getMessage()),
+                HttpStatus.CONFLICT);
+    }
+
+
+
 }
