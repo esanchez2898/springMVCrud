@@ -27,7 +27,4 @@ public class CartItemDto implements Serializable {
     @NotNull
     private Integer productId;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Integer cartId;
-
 }

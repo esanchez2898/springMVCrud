@@ -5,6 +5,8 @@ import org.example.converter.TempConverter;
 import org.example.dto.*;
 import org.example.entity.*;
 import org.example.exception.exceptions.CategoryNotFoundException;
+import org.example.exception.exceptions.CustomerNotFoundException;
+import org.example.exception.exceptions.ProductNotFoundException;
 import org.example.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +135,45 @@ public class TempConverterImpl implements TempConverter {
         return returnValue;
     }
 
+    @Override
+    public CartDto entityToDto(CartEntity cartEntity) {
+
+        CartDto cartDto = modelMapper.map(cartEntity, CartDto.class);
+
+        Optional<List<CartItemEntity>> cartItemEntityOptional = Optional.ofNullable(cartEntity.getCartItems());
+        Optional<CustomerEntity> customerEntityOptional = Optional.ofNullable(cartEntity.getCustomer());
+
+        List<CartItemDto> cartItemDtos = new ArrayList<>();
+
+        if (cartItemEntityOptional.isPresent()) {
+
+            for (CartItemEntity c : cartItemEntityOptional.get()) {
+                CartItemDto cartItemDto = modelMapper.map(c, CartItemDto.class);
+
+                Optional<ProductEntity> productEntityOptional = Optional.ofNullable(c.getProductEntity());
+
+                if (productEntityOptional.isPresent()) {
+                    Integer productId = productEntityOptional.get().getId();
+                    cartItemDto.setProductId(productId);
+                }
+                cartItemDtos.add(cartItemDto);
+            }
+
+            cartDto.setCartItems(cartItemDtos);
+
+        }
+
+        if (customerEntityOptional.isPresent()) {
+            Integer customerId = customerEntityOptional.get().getId();
+            cartDto.setCustomerId(customerId);
+        }
+
+        return cartDto;
+    }
+
+
+    // DTO ---> ENTITY
+
 
     @Override
     public ProductEntity dtoToEntity(ProductDto productDto) {
@@ -161,7 +202,7 @@ public class TempConverterImpl implements TempConverter {
         CategoryEntity returnValue = modelMapper.map(categoryDto, CategoryEntity.class);
         Optional<Integer> categoryIdOptional = Optional.ofNullable(categoryDto.getId());
 
-        if(categoryIdOptional.isPresent()) {
+        if (categoryIdOptional.isPresent()) {
             Integer categoryId = categoryIdOptional.get();
             List<ProductEntity> productList = productRepository.findAllByCategoryId(categoryId);
             returnValue.setProducts(productList);
@@ -239,5 +280,57 @@ public class TempConverterImpl implements TempConverter {
         returnValue.setRoles(roleEntities);
 
         return returnValue;
+    }
+
+    @Override
+    public CartEntity dtoToEntity(CartDto cartDto) {
+
+        CartEntity cartEntity = modelMapper.map(cartDto, CartEntity.class);
+
+        Optional<Integer> customerId = Optional.ofNullable(cartDto.getCustomerId());
+        Optional<List<CartItemDto>> cartItemDtos = Optional.ofNullable(cartDto.getCartItems());
+        Double total = 0.0;
+
+        List<CartItemEntity> cartItemEntities = new ArrayList<>();
+
+        if (cartItemDtos.isPresent()) {
+            for (CartItemDto c : cartItemDtos.get()) {
+                CartItemEntity cartItemEntity = modelMapper.map(c, CartItemEntity.class);
+
+                Optional<Integer> productIdOptional = Optional.ofNullable(c.getProductId());
+                if (productIdOptional.isPresent()) {
+                    Optional<ProductEntity> productEntity = productRepository.findById(productIdOptional.get());
+
+                    if (productEntity.isEmpty()) {
+                        throw new ProductNotFoundException("Product was not found");
+                    }
+                    cartItemEntity.setProductEntity(productEntity.get());
+                    Double productPrice = productEntity.get().getPrice();
+                    Double totalPrice = cartItemEntity.getQuantity() * productPrice;
+                    cartItemEntity.setTotalPrice(totalPrice);
+
+                }
+                cartItemEntities.add(cartItemEntity);
+                total += cartItemEntity.getTotalPrice();
+            }
+            cartEntity.setCartItems(cartItemEntities);
+            cartEntity.setPrice(total);
+
+
+        }
+
+        if (customerId.isPresent()) {
+            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId.get());
+            if (customerEntityOptional.isEmpty()) {
+                throw new CustomerNotFoundException("Customer was not found");
+            }
+            cartEntity.setCustomer(customerEntityOptional.get());
+        }
+
+
+
+
+
+        return cartEntity;
     }
 }
