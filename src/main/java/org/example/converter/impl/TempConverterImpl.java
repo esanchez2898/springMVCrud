@@ -28,9 +28,10 @@ public class TempConverterImpl implements TempConverter {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Autowired
-    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository, AddressRepository addressRepository1, UserRepository userRepository, RoleRepository roleRepository, CartRepository cartRepository) {
+    public TempConverterImpl(ModelMapper modelMapper, CategoryRepository categoryRepository, ProductRepository productRepository, AddressRepository addressRepository, CustomerRepository customerRepository, AddressRepository addressRepository1, UserRepository userRepository, RoleRepository roleRepository, CartRepository cartRepository, CartItemRepository cartItemRepository) {
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
@@ -39,6 +40,7 @@ public class TempConverterImpl implements TempConverter {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     @Override
@@ -143,23 +145,17 @@ public class TempConverterImpl implements TempConverter {
         Optional<List<CartItemEntity>> cartItemEntityOptional = Optional.ofNullable(cartEntity.getCartItems());
         Optional<CustomerEntity> customerEntityOptional = Optional.ofNullable(cartEntity.getCustomer());
 
-        List<CartItemDto> cartItemDtos = new ArrayList<>();
+        List<Integer> cartItemsIds = new ArrayList<>();
 
         if (cartItemEntityOptional.isPresent()) {
 
             for (CartItemEntity c : cartItemEntityOptional.get()) {
-                CartItemDto cartItemDto = modelMapper.map(c, CartItemDto.class);
 
-                Optional<ProductEntity> productEntityOptional = Optional.ofNullable(c.getProductEntity());
+                cartItemsIds.add(c.getId());
 
-                if (productEntityOptional.isPresent()) {
-                    Integer productId = productEntityOptional.get().getId();
-                    cartItemDto.setProductId(productId);
-                }
-                cartItemDtos.add(cartItemDto);
             }
 
-            cartDto.setCartItems(cartItemDtos);
+            cartDto.setCartItemsIds(cartItemsIds);
 
         }
 
@@ -169,6 +165,31 @@ public class TempConverterImpl implements TempConverter {
         }
 
         return cartDto;
+    }
+
+    @Override
+    public CartItemDto entityToDto(CartItemEntity cartItemEntity) {
+
+        CartItemDto returnValue = modelMapper.map(cartItemEntity, CartItemDto.class);
+
+        Optional<ProductEntity> productEntityOptional = Optional.ofNullable(cartItemEntity.getProduct());
+
+        if (productEntityOptional.isPresent()) {
+            ProductEntity productEntity = productEntityOptional.get();
+
+            returnValue.setProductId(productEntity.getId());
+
+            Double discount = productEntity.getDiscount();
+            Double productPrice = productEntity.getPrice();
+            Double itemPrice = productPrice - ((discount * productPrice) / 100);
+            itemPrice = itemPrice * returnValue.getQuantity();
+
+            returnValue.setTotalPrice(itemPrice);
+
+        }
+
+
+        return null;
     }
 
 
@@ -284,53 +305,84 @@ public class TempConverterImpl implements TempConverter {
 
     @Override
     public CartEntity dtoToEntity(CartDto cartDto) {
+        CartEntity returnValue = modelMapper.map(cartDto, CartEntity.class);
 
-        CartEntity cartEntity = modelMapper.map(cartDto, CartEntity.class);
+        Optional<Integer> cartIdOptional = Optional.ofNullable(cartDto.getId());
+        Optional<Integer> customerIdOptional = Optional.ofNullable(cartDto.getCustomerId());
 
-        Optional<Integer> customerId = Optional.ofNullable(cartDto.getCustomerId());
-        Optional<List<CartItemDto>> cartItemDtos = Optional.ofNullable(cartDto.getCartItems());
-        Double total = 0.0;
+        List<CartItemEntity> cartItems = new ArrayList<>();
 
-        List<CartItemEntity> cartItemEntities = new ArrayList<>();
+        if (cartIdOptional.isPresent()) {
+            Integer cartId = cartIdOptional.get();
+            cartItems = cartItemRepository.findAllByCartId(cartId);
+        }
+        returnValue.setCartItems(cartItems);
 
-        if (cartItemDtos.isPresent()) {
-            for (CartItemDto c : cartItemDtos.get()) {
-                CartItemEntity cartItemEntity = modelMapper.map(c, CartItemEntity.class);
-
-                Optional<Integer> productIdOptional = Optional.ofNullable(c.getProductId());
-                if (productIdOptional.isPresent()) {
-                    Optional<ProductEntity> productEntity = productRepository.findById(productIdOptional.get());
-
-                    if (productEntity.isEmpty()) {
-                        throw new ProductNotFoundException("Product was not found");
-                    }
-                    cartItemEntity.setProductEntity(productEntity.get());
-                    Double productPrice = productEntity.get().getPrice();
-                    Double totalPrice = cartItemEntity.getQuantity() * productPrice;
-                    cartItemEntity.setTotalPrice(totalPrice);
-
-                }
-                cartItemEntities.add(cartItemEntity);
-                total += cartItemEntity.getTotalPrice();
-            }
-            cartEntity.setCartItems(cartItemEntities);
-            cartEntity.setPrice(total);
-
-
+        if (customerIdOptional.isPresent()) {
+            Integer customerId = customerIdOptional.get();
+            customerRepository.findById(customerId).ifPresent(customerEntity -> {
+                returnValue.setCustomer(customerEntity);
+            });
         }
 
-        if (customerId.isPresent()) {
-            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId.get());
-            if (customerEntityOptional.isEmpty()) {
-                throw new CustomerNotFoundException("Customer was not found");
-            }
-            cartEntity.setCustomer(customerEntityOptional.get());
-        }
-
-
-
-
-
-        return cartEntity;
+        return returnValue;
     }
+
+    @Override
+    public CartItemEntity dtoToEntity(CartItemDto cartItemDto) {
+        return null;
+    }
+
+
+//    @Override
+//    public CartEntity dtoToEntity(CartDto cartDto) {
+//
+//        CartEntity cartEntity = modelMapper.map(cartDto, CartEntity.class);
+//
+//        Optional<Integer> customerId = Optional.ofNullable(cartDto.getCustomerId());
+//        Optional<List<CartItemDto>> cartItemDtos = Optional.ofNullable(cartDto.getCartItems());
+//        Double total = 0.0;
+//
+//        List<CartItemEntity> cartItemEntities = new ArrayList<>();
+//
+//        if (cartItemDtos.isPresent()) {
+//            for (CartItemDto c : cartItemDtos.get()) {
+//                CartItemEntity cartItemEntity = modelMapper.map(c, CartItemEntity.class);
+//
+//                Optional<Integer> productIdOptional = Optional.ofNullable(c.getProductId());
+//                if (productIdOptional.isPresent()) {
+//                    Optional<ProductEntity> productEntity = productRepository.findById(productIdOptional.get());
+//
+//                    if (productEntity.isEmpty()) {
+//                        throw new ProductNotFoundException("Product was not found");
+//                    }
+//                    cartItemEntity.setProductEntity(productEntity.get());
+//                    Double productPrice = productEntity.get().getPrice();
+//                    Double totalPrice = cartItemEntity.getQuantity() * productPrice;
+//                    cartItemEntity.setTotalPrice(totalPrice);
+//
+//                }
+//                cartItemEntities.add(cartItemEntity);
+//                total += cartItemEntity.getTotalPrice();
+//            }
+//            cartEntity.setCartItems(cartItemEntities);
+//            cartEntity.setPrice(total);
+//
+//
+//        }
+//
+//        if (customerId.isPresent()) {
+//            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId.get());
+//            if (customerEntityOptional.isEmpty()) {
+//                throw new CustomerNotFoundException("Customer was not found");
+//            }
+//            cartEntity.setCustomer(customerEntityOptional.get());
+//        }
+//
+//
+//
+//
+//
+//        return cartEntity;
+//    }
 }

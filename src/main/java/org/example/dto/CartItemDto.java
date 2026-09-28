@@ -27,4 +27,7 @@ public class CartItemDto implements Serializable {
     @NotNull
     private Integer productId;
 
+    @NotNull
+    private Integer cartId;
+
 }

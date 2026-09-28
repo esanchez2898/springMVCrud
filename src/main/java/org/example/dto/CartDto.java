@@ -21,7 +21,7 @@ public class CartDto implements Serializable {
     private Double price;
 
     @NotNull
-    private List<CartItemDto> cartItems;
+    private List<Integer> cartItemsIds;
 
     @NotNull
     private Integer customerId;
