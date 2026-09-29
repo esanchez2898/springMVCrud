@@ -108,6 +108,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(InstanceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleInstanceNotFoundException(InstanceNotFoundException exc) {
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        exc.getMessage()),
+                HttpStatus.CONFLICT);
+    }
+
 
 
 }

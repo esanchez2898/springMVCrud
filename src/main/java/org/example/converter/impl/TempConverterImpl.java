@@ -170,6 +170,7 @@ public class TempConverterImpl implements TempConverter {
         CartItemDto returnValue = modelMapper.map(cartItemEntity, CartItemDto.class);
 
         Optional<ProductEntity> productEntityOptional = Optional.ofNullable(cartItemEntity.getProduct());
+        Optional<CartEntity> cartEntityOptional = Optional.ofNullable(cartItemEntity.getCart());
 
         if (productEntityOptional.isPresent()) {
             ProductEntity productEntity = productEntityOptional.get();
@@ -182,8 +183,11 @@ public class TempConverterImpl implements TempConverter {
             itemPrice = itemPrice * returnValue.getQuantity();
 
             returnValue.setTotalPrice(itemPrice);
-
         }
+
+        cartEntityOptional.ifPresent(cart -> {
+            returnValue.setCartId(cart.getId());
+        });
 
         return returnValue;
     }
@@ -335,7 +339,7 @@ public class TempConverterImpl implements TempConverter {
             Integer productId = productIdOptional.get();
             Optional<ProductEntity> productEntity = productRepository.findById(productId);
 
-            productEntity.ifPresentOrElse(product -> {
+            productEntity.ifPresent(product -> {
 
                 Double discount = product.getDiscount();
                 Double productPrice = product.getPrice();
@@ -344,8 +348,6 @@ public class TempConverterImpl implements TempConverter {
 
                 returnValue.setTotalPrice(totalPrice);
                 returnValue.setProduct(product);
-            }, () -> {
-                throw new ProductNotFoundException("Producto was not found");
             });
         }
 
@@ -354,7 +356,6 @@ public class TempConverterImpl implements TempConverter {
 
             cartEntityOptional.ifPresent(returnValue::setCart);
         }
-
 
         return returnValue;
     }

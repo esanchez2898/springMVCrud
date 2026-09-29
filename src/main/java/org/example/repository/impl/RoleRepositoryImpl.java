@@ -52,7 +52,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public Optional<RoleEntity> findByName(Integer roleName) {
+    public Optional<RoleEntity> findByName(String roleName) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoleEntity> criteriaQuery = criteriaBuilder.createQuery(RoleEntity.class);
         Root<RoleEntity> root = criteriaQuery.from(RoleEntity.class);

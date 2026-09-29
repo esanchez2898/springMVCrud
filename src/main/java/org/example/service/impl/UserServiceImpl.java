@@ -4,12 +4,15 @@ import org.example.converter.TempConverter;
 import org.example.dto.ProductDto;
 import org.example.dto.UserDto;
 import org.example.entity.ProductEntity;
+import org.example.entity.RoleEntity;
 import org.example.entity.UserEntity;
 import org.example.exception.exceptions.DuplicateFoundException;
+import org.example.exception.exceptions.InstanceNotFoundException;
 import org.example.exception.exceptions.UserNotFoundException;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,23 +26,25 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TempConverter converte;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TempConverter converte) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TempConverter converte, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.converte = converte;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        List<UserEntity> returnValue = userRepository.findAll();
-        List<UserDto> usersDtos = new ArrayList<>();
+        List<UserEntity> users = userRepository.findAll();
+        List<UserDto> returnValue = new ArrayList<>();
 
-        for (UserEntity u : returnValue) {
-            usersDtos.add(converte.entityToDto(u));
+        for (UserEntity user : users) {
+            returnValue.add(converte.entityToDto(user));
         }
 
-        return usersDtos;
+        return returnValue;
     }
 
     @Override
@@ -61,8 +66,25 @@ public class UserServiceImpl implements UserService {
         if (userEntityOptional.isPresent()) {
             throw new DuplicateFoundException("User with email " + userDto.getEmail() + " already exist");
         }
+        userDto.setEnabled((byte) 1);
+
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         UserEntity userEntity = converte.dtoToEntity(userDto);
+
+        String roleName = "ROLE_USER";
+
+        RoleEntity roleEntity = roleRepository.findByName(roleName).orElse(null);
+
+        if (roleEntity == null ) {
+            throw new InstanceNotFoundException("Role " + roleName + " was not found");
+        }
+
+        List<RoleEntity> roles = new ArrayList<>();
+        roles.add(roleEntity);
+
+        userEntity.setRoles(roles);
+
         UserEntity userEntitySaved =  userRepository.save(userEntity);
 
         return converte.entityToDto(userEntitySaved);
@@ -96,7 +118,19 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Integer userId) {
         getUserById(userId);
         userRepository.deleteById(userId);
+    }
 
+    @Override
+    public void desactivaredUserById(Integer userId) {
+        UserDto userDto = getUserById(userId);
+        userDto.setEnabled((byte) 0);
+        userRepository.save(converte.dtoToEntity(userDto));
+    }
 
+    @Override
+    public void reactivaretUserById(Integer userId) {
+        UserDto userDto = getUserById(userId);
+        userDto.setEnabled((byte) 1);
+        userRepository.save(converte.dtoToEntity(userDto));
     }
 }

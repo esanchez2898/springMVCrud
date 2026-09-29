@@ -12,4 +12,6 @@ public interface UserService {
     UserDto addUser(UserDto userDto);
     UserDto updateUser(Integer userId, UserDto userDto);
     void deleteUserById(Integer userId);
+    void desactivaredUserById(Integer userId);
+    void reactivaretUserById(Integer userId);
 }
