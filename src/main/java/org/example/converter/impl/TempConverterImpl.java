@@ -1,11 +1,9 @@
 package org.example.converter.impl;
 
-import lombok.AllArgsConstructor;
 import org.example.converter.TempConverter;
 import org.example.dto.*;
 import org.example.entity.*;
 import org.example.exception.exceptions.CategoryNotFoundException;
-import org.example.exception.exceptions.CustomerNotFoundException;
 import org.example.exception.exceptions.ProductNotFoundException;
 import org.example.repository.*;
 import org.modelmapper.ModelMapper;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @Component
 public class TempConverterImpl implements TempConverter {
@@ -181,15 +178,14 @@ public class TempConverterImpl implements TempConverter {
 
             Double discount = productEntity.getDiscount();
             Double productPrice = productEntity.getPrice();
-            Double itemPrice = productPrice - ((discount * productPrice) / 100);
+            double itemPrice = productPrice - ((discount * productPrice) / 100);
             itemPrice = itemPrice * returnValue.getQuantity();
 
             returnValue.setTotalPrice(itemPrice);
 
         }
 
-
-        return null;
+        return returnValue;
     }
 
 
@@ -330,7 +326,37 @@ public class TempConverterImpl implements TempConverter {
 
     @Override
     public CartItemEntity dtoToEntity(CartItemDto cartItemDto) {
-        return null;
+
+        CartItemEntity returnValue = modelMapper.map(cartItemDto, CartItemEntity.class);
+
+        Optional<Integer> productIdOptional = Optional.ofNullable(cartItemDto.getProductId());
+
+        if (productIdOptional.isPresent()) {
+            Integer productId = productIdOptional.get();
+            Optional<ProductEntity> productEntity = productRepository.findById(productId);
+
+            productEntity.ifPresentOrElse(product -> {
+
+                Double discount = product.getDiscount();
+                Double productPrice = product.getPrice();
+                double itemPrice = productPrice - ((discount * productPrice) / 100);
+                Double totalPrice = itemPrice * returnValue.getQuantity();
+
+                returnValue.setTotalPrice(totalPrice);
+                returnValue.setProduct(product);
+            }, () -> {
+                throw new ProductNotFoundException("Producto was not found");
+            });
+        }
+
+        if (cartItemDto.getCartId() != null) {
+            Optional<CartEntity> cartEntityOptional = cartRepository.findById(cartItemDto.getCartId());
+
+            cartEntityOptional.ifPresent(returnValue::setCart);
+        }
+
+
+        return returnValue;
     }
 
 
