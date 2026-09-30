@@ -121,14 +121,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void desactivaredUserById(Integer userId) {
+    public void deactivateUserById(Integer userId) {
         UserDto userDto = getUserById(userId);
         userDto.setEnabled((byte) 0);
         userRepository.save(converte.dtoToEntity(userDto));
     }
 
     @Override
-    public void reactivaretUserById(Integer userId) {
+    public void activateUserById(Integer userId) {
         UserDto userDto = getUserById(userId);
         userDto.setEnabled((byte) 1);
         userRepository.save(converte.dtoToEntity(userDto));

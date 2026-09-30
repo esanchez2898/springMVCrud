@@ -1,14 +1,15 @@
 package org.example.service.impl;
 
 import org.example.converter.TempConverter;
-import org.example.dto.CustomerDto;
-import org.example.dto.UserDto;
+import org.example.dto.*;
 import org.example.entity.CustomerEntity;
 import org.example.entity.UserEntity;
 import org.example.exception.exceptions.CustomerNotFoundException;
 import org.example.exception.exceptions.DuplicateFoundException;
 import org.example.repository.CustomerRepository;
+import org.example.service.AddressService;
 import org.example.service.CustomerService;
+import org.example.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,10 +22,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final TempConverter converter;
+    private final UserService userService;
+    private final AddressService addressService;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, TempConverter converter) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, TempConverter converter, UserService userService, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.converter = converter;
+        this.userService = userService;
+        this.addressService = addressService;
     }
 
     @Override
@@ -53,7 +58,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto addCustomer(CustomerDto customerDto) {
+    public CustomerDto addCustomer(RegistrationForm form) {
+
+        UserDto user = form.getUser();
+        AddressDto address = form.getAddress();
+        CustomerDto customerDto = form.getCustomer();
+
+        CartDto cart = new CartDto();
+        cart.setPrice(0d);
+
+        UserDto storedUser  = userService.addUser(user);
+        AddressDto storedAddress  = addressService.addAddress(address);
 
         //getCustomerById(customerDto.getId());
 
@@ -62,6 +77,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerEntityOptional.isPresent()) {
             throw new DuplicateFoundException("Customer with phone " + customerDto.getCustomerPhone() + " already exist");
         }
+
+        customerDto.setUserId(user.getId());
+        customerDto.setAddressId(address.getId());
+        customerDto.setCartId(cart.getId());
 
         CustomerEntity customerEntity = converter.dtoToEntity(customerDto);
         CustomerEntity customerEntitySaved = customerRepository.save(customerEntity);
