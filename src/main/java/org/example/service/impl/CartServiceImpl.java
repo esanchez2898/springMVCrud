@@ -20,11 +20,28 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDto addCart(CartDto cart) {
 
-
         CartEntity cartEntity = converter.dtoToEntity(cart);
         CartEntity cartSaved = cartRepository.save(cartEntity);
 
         return converter.entityToDto(cartSaved);
+    }
+
+    @Override
+    public CartDto clearCart() { // 2 possible ways
+
+
+
+        return null;
+    }
+
+    @Override
+    public void refreshCartState(Integer cartId) {
+
+    }
+
+    @Override
+    public CartDto getCartById(Integer cartId) {
+        return null;
     }
 
 }

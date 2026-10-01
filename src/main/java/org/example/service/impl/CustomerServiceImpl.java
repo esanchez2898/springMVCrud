@@ -2,12 +2,15 @@ package org.example.service.impl;
 
 import org.example.converter.TempConverter;
 import org.example.dto.*;
+import org.example.entity.CartEntity;
 import org.example.entity.CustomerEntity;
 import org.example.entity.UserEntity;
 import org.example.exception.exceptions.CustomerNotFoundException;
 import org.example.exception.exceptions.DuplicateFoundException;
+import org.example.repository.CartRepository;
 import org.example.repository.CustomerRepository;
 import org.example.service.AddressService;
+import org.example.service.CartService;
 import org.example.service.CustomerService;
 import org.example.service.UserService;
 import org.springframework.stereotype.Service;
@@ -21,12 +24,14 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CartService cartService;
     private final TempConverter converter;
     private final UserService userService;
     private final AddressService addressService;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, TempConverter converter, UserService userService, AddressService addressService) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, CartService cartService, TempConverter converter, UserService userService, AddressService addressService) {
         this.customerRepository = customerRepository;
+        this.cartService = cartService;
         this.converter = converter;
         this.userService = userService;
         this.addressService = addressService;
@@ -64,13 +69,8 @@ public class CustomerServiceImpl implements CustomerService {
         AddressDto address = form.getAddress();
         CustomerDto customerDto = form.getCustomer();
 
-        CartDto cart = new CartDto();
-        cart.setPrice(0d);
-
-        UserDto storedUser  = userService.addUser(user);
-        AddressDto storedAddress  = addressService.addAddress(address);
-
-        //getCustomerById(customerDto.getId());
+        CartDto cartDto = new CartDto();
+        cartDto.setPrice(0d);
 
         Optional<CustomerEntity> customerEntityOptional = customerRepository.findByPhone(customerDto.getCustomerPhone());
 
@@ -78,9 +78,15 @@ public class CustomerServiceImpl implements CustomerService {
             throw new DuplicateFoundException("Customer with phone " + customerDto.getCustomerPhone() + " already exist");
         }
 
-        customerDto.setUserId(user.getId());
-        customerDto.setAddressId(address.getId());
-        customerDto.setCartId(cart.getId());
+        UserDto storedUser  = userService.addUser(user);
+        AddressDto storedAddress  = addressService.addAddress(address);
+        CartDto storedCart = cartService.addCart(cartDto);
+
+        //getCustomerById(customerDto.getId());
+
+        customerDto.setUserId(storedUser.getId());
+        customerDto.setAddressId(storedAddress.getId());
+        customerDto.setCartId(storedCart.getId());
 
         CustomerEntity customerEntity = converter.dtoToEntity(customerDto);
         CustomerEntity customerEntitySaved = customerRepository.save(customerEntity);
