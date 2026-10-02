@@ -10,6 +10,7 @@ public interface CustomerRepository {
     List<CustomerEntity> findAll();
     Optional<CustomerEntity> findById(Integer customerId);
     Optional<CustomerEntity> findByPhone(String customerPhone);
+    Optional<CustomerEntity> findByUserId(Integer userId);
     CustomerEntity save(CustomerEntity customerEntity);
     void deleteById(Integer customerId);
 

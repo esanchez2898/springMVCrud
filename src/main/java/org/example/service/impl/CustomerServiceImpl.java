@@ -63,6 +63,24 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public CustomerDto getCurrentCustomer() {
+        UserDto currentUser = userService.getCurrentUser();
+        return getCustomerByUserId(currentUser.getId());
+    }
+
+    @Override
+    public CustomerDto getCustomerByUserId(Integer userId) {
+
+        Optional<CustomerEntity> customerOptional = customerRepository.findByUserId(userId);
+
+        if (customerOptional.isEmpty()) {
+            throw new CustomerNotFoundException("Customer was not found");
+        }
+
+        return converter.entityToDto(customerOptional.get());
+    }
+
+    @Override
     public CustomerDto addCustomer(RegistrationForm form) {
 
         UserDto user = form.getUser();

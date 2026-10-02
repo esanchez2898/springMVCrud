@@ -80,6 +80,29 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
+    public Optional<CustomerEntity> findByUserId(Integer userId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<CustomerEntity> criteriaQuery = criteriaBuilder.createQuery(CustomerEntity.class);
+        Root<CustomerEntity> root = criteriaQuery.from(CustomerEntity.class);
+
+        root.fetch("address", JoinType.INNER);
+        root.fetch("user", JoinType.INNER);
+        root.fetch("cart", JoinType.INNER);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("user").get("id"), userId);
+
+        criteriaQuery.where(predicate);
+
+        List<CustomerEntity> resultList = entityManager.createQuery(criteriaQuery).getResultList();
+
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resultList.getFirst());
+        }
+    }
+
+    @Override
     public CustomerEntity save(CustomerEntity customerEntity) {
         if (customerEntity.getId() == null) {
             entityManager.persist(customerEntity);

@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.example.entity.CartEntity;
-import org.example.entity.UserEntity;
+import org.example.entity.CartItemEntity;
 import org.example.repository.CartRepository;
 import org.springframework.stereotype.Repository;
 
@@ -74,5 +74,21 @@ public class CartRepositoryImpl implements CartRepository {
             entityManager.remove(cartEntity);
         }
 
+    }
+
+    @Override
+    public Optional<Double> calculateTotalPrice(Integer cartId) {
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Double> criteriaQuery = criteriaBuilder.createQuery(Double.class);
+        Root<CartItemEntity> root = criteriaQuery.from(CartItemEntity.class);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("cart").get("id"), cartId);
+
+        criteriaQuery.select(criteriaBuilder.sum(root.get("totalPrice"))).where(predicate);
+
+        Double result = entityManager.createQuery(criteriaQuery.where(predicate)).getSingleResult();
+
+        return Optional.ofNullable(result);
     }
 }

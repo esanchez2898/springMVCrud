@@ -9,6 +9,8 @@ import java.util.List;
 public interface CustomerService {
     List<CustomerDto> getAllCustomers();
     CustomerDto getCustomerById(Integer customerId);
+    CustomerDto getCurrentCustomer();
+    CustomerDto getCustomerByUserId(Integer userId);
 
     CustomerDto addCustomer(RegistrationForm form);
     CustomerDto updateCustomer(Integer customerId, CustomerDto customerDto);

@@ -11,4 +11,6 @@ public interface CartRepository {
     Optional<CartEntity> findById(Integer cartId);
     CartEntity save(CartEntity cartEntity);
     void deleteById(Integer cartId);
+
+    Optional<Double> calculateTotalPrice(Integer cartId);
 }

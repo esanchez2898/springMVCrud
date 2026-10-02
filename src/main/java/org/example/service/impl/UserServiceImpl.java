@@ -12,6 +12,9 @@ import org.example.exception.exceptions.UserNotFoundException;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +59,33 @@ public class UserServiceImpl implements UserService {
         }
 
         return converte.entityToDto(userEntityOptional.get());
+    }
+
+    @Override
+    public UserDto getCurrentUser() {
+        UserDto returnValue = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            assert authentication != null;
+            String currentUsername = authentication.getName();
+
+            Optional<UserEntity> userOptional = userRepository.findByEmail(currentUsername);
+
+            if (userOptional.isPresent()) {
+                UserEntity userEntity = userOptional.get();
+
+                returnValue = converte.entityToDto(userEntity);
+
+            } else {
+                throw new InstanceNotFoundException("Invalid user");
+            }
+
+        } else {
+            throw new InstanceNotFoundException("Invalid user");
+        }
+
+        return returnValue;
     }
 
     @Override
