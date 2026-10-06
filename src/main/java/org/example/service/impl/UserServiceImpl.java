@@ -1,6 +1,7 @@
 package org.example.service.impl;
 
 import org.example.converter.TempConverter;
+import org.example.dto.AuthenticationRequest;
 import org.example.dto.ProductDto;
 import org.example.dto.UserDto;
 import org.example.entity.ProductEntity;
@@ -13,7 +14,10 @@ import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,12 +34,14 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final TempConverter converte;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TempConverter converte, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TempConverter converte, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.converte = converte;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -53,6 +59,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Integer userId) {
         Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
+
+        if (userEntityOptional.isEmpty()) {
+            throw new UserNotFoundException("User was not found");
+        }
+
+        return converte.entityToDto(userEntityOptional.get());
+    }
+
+    @Override
+    public UserDto getUserByEmal(String userEmail) {
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmail(userEmail);
 
         if (userEntityOptional.isEmpty()) {
             throw new UserNotFoundException("User was not found");
@@ -162,5 +179,27 @@ public class UserServiceImpl implements UserService {
         UserDto userDto = getUserById(userId);
         userDto.setEnabled((byte) 1);
         userRepository.save(converte.dtoToEntity(userDto));
+    }
+
+    @Override
+    public Optional<Authentication> authentocationUser(AuthenticationRequest authenticationRequest) {
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                authenticationRequest.getUsername(), authenticationRequest.getPassword());
+
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmail(authenticationRequest.getUsername());
+
+        if (userEntityOptional.isPresent()) {
+            //UserEntity userEntity = userEntityOptional.get();
+            try {
+                Authentication authentication = authenticationManager.authenticate(token);
+                return Optional.of(authentication);
+
+            } catch (AuthenticationException e) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.empty();
     }
 }

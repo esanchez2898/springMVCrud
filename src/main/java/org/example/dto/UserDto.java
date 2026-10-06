@@ -43,5 +43,7 @@ public class UserDto implements Serializable {
 
     private List<Integer> rolesIds;
 
+    private String authToken;
+
 
 }
