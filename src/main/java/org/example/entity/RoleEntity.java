@@ -1,9 +1,6 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -12,9 +9,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "roles")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class RoleEntity implements GrantedAuthority, Serializable {
 
     @Id
@@ -30,5 +24,38 @@ public class RoleEntity implements GrantedAuthority, Serializable {
     @Override
     public @Nullable String getAuthority() {
         return roleName;
+    }
+
+    public RoleEntity() {
+    }
+
+    public RoleEntity(Integer id, String roleName, List<UserEntity> users) {
+        this.id = id;
+        this.roleName = roleName;
+        this.users = users;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public List<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserEntity> users) {
+        this.users = users;
     }
 }

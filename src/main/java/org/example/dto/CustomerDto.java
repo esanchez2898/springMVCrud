@@ -1,22 +1,12 @@
 package org.example.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.example.entity.AddressEntity;
-import org.example.entity.CartEntity;
-import org.example.entity.UserEntity;
 
 import java.io.Serializable;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class CustomerDto implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -39,4 +29,54 @@ public class CustomerDto implements Serializable {
     @Positive
     private Integer cartId;
 
+    public CustomerDto() {
+    }
+
+    public CustomerDto(Integer id, String customerPhone, Integer addressId, Integer userId, Integer cartId) {
+        this.id = id;
+        this.customerPhone = customerPhone;
+        this.addressId = addressId;
+        this.userId = userId;
+        this.cartId = cartId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public Integer getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Integer addressId) {
+        this.addressId = addressId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
+    }
 }

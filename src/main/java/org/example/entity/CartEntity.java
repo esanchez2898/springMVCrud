@@ -1,18 +1,12 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "carts")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class CartEntity implements Serializable {
 
     @Id
@@ -29,4 +23,45 @@ public class CartEntity implements Serializable {
     @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "cart") // private CartEntity cart;
     private CustomerEntity customer;
 
+    public CartEntity() {
+    }
+
+    public CartEntity(Integer id, Double price, List<CartItemEntity> cartItems, CustomerEntity customer) {
+        this.id = id;
+        this.price = price;
+        this.cartItems = cartItems;
+        this.customer = customer;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public List<CartItemEntity> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(List<CartItemEntity> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public CustomerEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
+    }
 }

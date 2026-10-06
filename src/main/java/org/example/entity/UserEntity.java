@@ -1,7 +1,7 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,9 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserEntity implements UserDetails, Serializable {
 
     @Id
@@ -38,6 +35,81 @@ public class UserEntity implements UserDetails, Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles;
+
+
+    public UserEntity() {
+    }
+
+    public UserEntity(Integer id, String firstname, String lastname, String email, String password, byte enabled, List<RoleEntity> roles) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.roles = roles;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public byte getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(byte enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles;
+    }
+
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -68,5 +140,6 @@ public class UserEntity implements UserDetails, Serializable {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
 }
 
