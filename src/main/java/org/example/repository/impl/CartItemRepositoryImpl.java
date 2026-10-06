@@ -73,4 +73,15 @@ public class CartItemRepositoryImpl implements CartItemRepository {
         cartItemEntityOptional.ifPresent(entityManager::remove);
 
     }
+
+    @Override
+    public void deleteAllByCartId(Integer cartId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<CartItemEntity>  criteriaDelete = criteriaBuilder.createCriteriaDelete(CartItemEntity.class);
+        Root<CartItemEntity> root = criteriaDelete.from(CartItemEntity.class);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("cart").get("id"), cartId);
+
+        entityManager.createQuery(criteriaDelete.where(predicate)).executeUpdate();
+    }
 }

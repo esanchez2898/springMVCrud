@@ -10,4 +10,5 @@ public interface CartItemRepository {
     CartItemEntity save(CartItemEntity itemEntity);
     Optional<CartItemEntity> findById(Integer itemId);
     void deleteById(Integer itemId);
+    void deleteAllByCartId(Integer cartId);
 }
