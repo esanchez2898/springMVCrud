@@ -32,6 +32,22 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
+    public List<RoleEntity> findAllByUserId(Integer userId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<RoleEntity> criteriaQuery = criteriaBuilder.createQuery(RoleEntity.class);
+        Root<RoleEntity> root = criteriaQuery.from(RoleEntity.class);
+
+        root.fetch("users", JoinType.LEFT);
+        Join<RoleEntity, ?> usersJoin = root.join("users", JoinType.LEFT); // -> sql join
+
+        Predicate predicate = criteriaBuilder.equal(usersJoin.get("id"), userId); // -> sql join
+
+        criteriaQuery.where(predicate).distinct(true);
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
     public Optional<RoleEntity> findById(Integer roleId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoleEntity> criteriaQuery = criteriaBuilder.createQuery(RoleEntity.class);

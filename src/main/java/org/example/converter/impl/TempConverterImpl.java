@@ -192,6 +192,27 @@ public class TempConverterImpl implements TempConverter {
         return returnValue;
     }
 
+    @Override
+    public RoleDto entityToDto(RoleEntity roleEntity) {
+
+        RoleDto returnValue = modelMapper.map(roleEntity, RoleDto.class);
+
+        Optional<List<UserEntity>> usersOptional = Optional.ofNullable(roleEntity.getUsers());
+        List<Integer> usersIds = new ArrayList<>();
+
+        if (usersOptional.isPresent()) {
+            List<UserEntity> users = usersOptional.get();
+
+            for (UserEntity user : users) {
+                usersIds.add(user.getId());
+            }
+        }
+
+        returnValue.setUsersIds(usersIds);
+
+        return returnValue;
+    }
+
 
     // DTO ---> ENTITY
 
@@ -356,6 +377,33 @@ public class TempConverterImpl implements TempConverter {
 
             cartEntityOptional.ifPresent(returnValue::setCart);
         }
+
+        return returnValue;
+    }
+
+    @Override
+    public RoleEntity dtoToEntity(RoleDto roleDto) {
+        RoleEntity returnValue = modelMapper.map(roleDto, RoleEntity.class);
+
+        Optional<List<Integer>> usersIdsOptional = Optional.ofNullable(roleDto.getUsersIds());
+        List<UserEntity> users = new ArrayList<>();
+
+        if (usersIdsOptional.isPresent()) {
+            List<Integer> usersIds = usersIdsOptional.get();
+
+
+            // homework!!! fix n + 1 !!!!!!
+
+            for (Integer id : usersIds) {
+                UserEntity userEntity = userRepository.findById(id).orElse(null); // n + 1
+                if (userEntity != null) {
+                    users.add(userEntity);
+                }
+            }
+
+        }
+
+        returnValue.setUsers(users);
 
         return returnValue;
     }

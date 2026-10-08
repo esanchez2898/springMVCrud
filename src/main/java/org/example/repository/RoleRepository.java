@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface RoleRepository {
     List<RoleEntity> findAll();
+    List<RoleEntity> findAllByUserId(Integer userId);
     Optional<RoleEntity> findById(Integer roleId);
     Optional<RoleEntity> findByName(String roleName);
     RoleEntity save(RoleEntity roleEntity);

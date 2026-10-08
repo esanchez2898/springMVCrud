@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.entity.AddressEntity;
+import org.example.entity.RoleEntity;
 import org.example.entity.UserEntity;
 
 import java.util.List;
@@ -12,4 +13,7 @@ public interface UserRepository {
     Optional<UserEntity> findByEmail(String userEmail);
     UserEntity save(UserEntity userEntity);
     void deleteById(Integer userId);
+
+    // homework !!!!
+    List<UserEntity> findAllByRoleId(Integer roleId);
 }

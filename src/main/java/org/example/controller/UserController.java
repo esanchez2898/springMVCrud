@@ -6,6 +6,7 @@ import org.example.dto.UserDto;
 import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.example.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,9 +22,11 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -72,7 +75,10 @@ public class UserController {
             throw new CredentialNotFoundException("Invalid username or password");
         }
 
+
+
         UserDto userDto = userService.getUserByEmal(request.getUsername());
+        jwtUtil.generateToken(userDto.getEmail(), userDto.)
 
         // user should return and have a token to pass!!
 

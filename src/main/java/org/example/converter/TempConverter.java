@@ -12,6 +12,7 @@ public interface TempConverter {
     UserDto entityToDto(UserEntity userEntity);
     CartDto entityToDto(CartEntity cartEntity);
     CartItemDto entityToDto(CartItemEntity cartItemEntity);
+    RoleDto entityToDto(RoleEntity roleEntity);
 
 
     ProductEntity dtoToEntity(ProductDto productDto);
@@ -21,6 +22,7 @@ public interface TempConverter {
     UserEntity dtoToEntity(UserDto userDto);
     CartEntity dtoToEntity(CartDto cartDto);
     CartItemEntity dtoToEntity(CartItemDto cartItemDto);
+    RoleEntity dtoToEntity(RoleDto roleDto);
 
 
 
