@@ -312,11 +312,8 @@ public class TempConverterImpl implements TempConverter {
         UserEntity returnValue = modelMapper.map(userDto, UserEntity.class);
         List<RoleEntity> roleEntities = new ArrayList<>();
 
-        for (Integer id : userDto.getRolesIds()) {
-            Optional<RoleEntity> roleEntityOptional = roleRepository.findById(id);
-            if (roleEntityOptional.isPresent()) {
-                roleEntities.add(roleEntityOptional.get());
-            }
+        if (userDto.getId() != null) {
+            roleEntities = roleRepository.findAllByUserId(userDto.getId());
         }
 
         returnValue.setRoles(roleEntities);
@@ -385,22 +382,10 @@ public class TempConverterImpl implements TempConverter {
     public RoleEntity dtoToEntity(RoleDto roleDto) {
         RoleEntity returnValue = modelMapper.map(roleDto, RoleEntity.class);
 
-        Optional<List<Integer>> usersIdsOptional = Optional.ofNullable(roleDto.getUsersIds());
         List<UserEntity> users = new ArrayList<>();
 
-        if (usersIdsOptional.isPresent()) {
-            List<Integer> usersIds = usersIdsOptional.get();
-
-
-            // homework!!! fix n + 1 !!!!!!
-
-            for (Integer id : usersIds) {
-                UserEntity userEntity = userRepository.findById(id).orElse(null); // n + 1
-                if (userEntity != null) {
-                    users.add(userEntity);
-                }
-            }
-
+        if (roleDto.getId() != null) {
+            users = userRepository.findAllByRoleId(roleDto.getId()); // -> this fix n + 1 problem
         }
 
         returnValue.setUsers(users);
@@ -408,56 +393,4 @@ public class TempConverterImpl implements TempConverter {
         return returnValue;
     }
 
-
-//    @Override
-//    public CartEntity dtoToEntity(CartDto cartDto) {
-//
-//        CartEntity cartEntity = modelMapper.map(cartDto, CartEntity.class);
-//
-//        Optional<Integer> customerId = Optional.ofNullable(cartDto.getCustomerId());
-//        Optional<List<CartItemDto>> cartItemDtos = Optional.ofNullable(cartDto.getCartItems());
-//        Double total = 0.0;
-//
-//        List<CartItemEntity> cartItemEntities = new ArrayList<>();
-//
-//        if (cartItemDtos.isPresent()) {
-//            for (CartItemDto c : cartItemDtos.get()) {
-//                CartItemEntity cartItemEntity = modelMapper.map(c, CartItemEntity.class);
-//
-//                Optional<Integer> productIdOptional = Optional.ofNullable(c.getProductId());
-//                if (productIdOptional.isPresent()) {
-//                    Optional<ProductEntity> productEntity = productRepository.findById(productIdOptional.get());
-//
-//                    if (productEntity.isEmpty()) {
-//                        throw new ProductNotFoundException("Product was not found");
-//                    }
-//                    cartItemEntity.setProductEntity(productEntity.get());
-//                    Double productPrice = productEntity.get().getPrice();
-//                    Double totalPrice = cartItemEntity.getQuantity() * productPrice;
-//                    cartItemEntity.setTotalPrice(totalPrice);
-//
-//                }
-//                cartItemEntities.add(cartItemEntity);
-//                total += cartItemEntity.getTotalPrice();
-//            }
-//            cartEntity.setCartItems(cartItemEntities);
-//            cartEntity.setPrice(total);
-//
-//
-//        }
-//
-//        if (customerId.isPresent()) {
-//            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId.get());
-//            if (customerEntityOptional.isEmpty()) {
-//                throw new CustomerNotFoundException("Customer was not found");
-//            }
-//            cartEntity.setCustomer(customerEntityOptional.get());
-//        }
-//
-//
-//
-//
-//
-//        return cartEntity;
-//    }
 }

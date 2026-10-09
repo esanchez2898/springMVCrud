@@ -27,8 +27,8 @@ public class RoleServiceImpl implements RoleService {
         for (RoleEntity role : roleEntities) {
             returnValue.add(converter.entityToDto(role));
         }
-
-
-        return List.of();
+        return returnValue;
     }
+
+
 }

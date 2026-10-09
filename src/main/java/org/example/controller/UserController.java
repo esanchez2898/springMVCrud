@@ -2,9 +2,11 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import org.example.dto.AuthenticationRequest;
+import org.example.dto.RoleDto;
 import org.example.dto.UserDto;
 import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.repository.UserRepository;
+import org.example.service.RoleService;
 import org.example.service.UserService;
 import org.example.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.CredentialNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,10 +25,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final RoleService roleService;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService, RoleService roleService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.roleService = roleService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -75,14 +80,20 @@ public class UserController {
             throw new CredentialNotFoundException("Invalid username or password");
         }
 
-
-
         UserDto userDto = userService.getUserByEmal(request.getUsername());
-        jwtUtil.generateToken(userDto.getEmail(), userDto.)
+        List<RoleDto> roles = roleService.findAllByUserId(userDto.getId());
+        List<String> roleNames = new ArrayList<>();
+
+        for (RoleDto role : roles) {
+            roleNames.add(role.getRoleName());
+        }
+
+        String jwtToken = jwtUtil.generateToken(userDto.getEmail(), roleNames);
+        userDto.setAuthToken(jwtToken);
 
         // user should return and have a token to pass!!
 
-        return new ResponseEntity<>(userService.authentocationUser(request), HttpStatus.CREATED);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
 }

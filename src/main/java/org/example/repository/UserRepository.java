@@ -13,7 +13,5 @@ public interface UserRepository {
     Optional<UserEntity> findByEmail(String userEmail);
     UserEntity save(UserEntity userEntity);
     void deleteById(Integer userId);
-
-    // homework !!!!
     List<UserEntity> findAllByRoleId(Integer roleId);
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.example.entity.ProductEntity;
+import org.example.entity.RoleEntity;
 import org.example.entity.UserEntity;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,26 @@ public class UserRepositoryImpl implements UserRepository {
         root.fetch("roles", JoinType.INNER);
 
         criteriaQuery.select(root).distinct(true);
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public List<UserEntity> findAllByRoleId(Integer roleId) {
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> root = criteriaQuery.from(UserEntity.class);
+
+        root.fetch("roles", JoinType.INNER);
+
+
+        Join<UserEntity, ?> rolesJoin = root.join("roles", JoinType.INNER); // -> sql join
+
+        Predicate predicate = criteriaBuilder.equal(rolesJoin.get("id"), roleId); // -> sql join
+
+
+        criteriaQuery.where(predicate).distinct(true);
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
@@ -94,4 +115,6 @@ public class UserRepositoryImpl implements UserRepository {
         }
 
     }
+
+
 }
