@@ -2,6 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import org.example.dto.CustomerDto;
+import org.example.dto.RegistrationForm;
 import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.service.CustomerService;
 import org.springframework.http.HttpStatus;
@@ -32,11 +33,11 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDto> addNewCustomer(@RequestBody @Valid CustomerDto customerDto, Errors errors) {
+    public ResponseEntity<CustomerDto> addNewCustomer(@RequestBody @Valid RegistrationForm registrationForm, Errors errors) {
         if (errors.hasErrors()) {
             throw new DataNotValidatedException(errors.getFieldErrors());
         }
-        return new ResponseEntity<>(customerService.addCustomer(customerDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(customerService.addCustomer(registrationForm), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")

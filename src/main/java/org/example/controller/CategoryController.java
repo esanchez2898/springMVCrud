@@ -9,6 +9,7 @@ import org.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CategoryDto> addCategory(@RequestBody @Valid CategoryDto categoryDto, Errors errors) {
 
         if (errors.hasErrors()) {
@@ -50,6 +52,7 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable("id") Integer categoryId, @RequestBody @Valid CategoryDto categoryDto, Errors errors) {
 
         if (errors.hasErrors()) {
@@ -62,12 +65,11 @@ public class CategoryController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) {
 
         categoryService.deleteCategoryById(categoryId);
 
         return new ResponseEntity<>("Category with ID " + categoryId + " was deleted successfully.", HttpStatus.OK);
-
-
     }
 }
