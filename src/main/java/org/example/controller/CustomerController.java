@@ -7,6 +7,7 @@ import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +24,18 @@ public class CustomerController {
     }
 
     @GetMapping
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<CustomerDto>> getAllCustomers() {
         return new ResponseEntity<>(customerService.getAllCustomers(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("id") Integer customerId) {
         return new ResponseEntity<>(customerService.getCustomerById(customerId), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(value = "/register")
     public ResponseEntity<CustomerDto> addNewCustomer(@RequestBody @Valid RegistrationForm registrationForm, Errors errors) {
         if (errors.hasErrors()) {
             throw new DataNotValidatedException(errors.getFieldErrors());
@@ -41,6 +44,7 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_USER')")
     public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("id") Integer customerId, @RequestBody @Valid CustomerDto customerDto, Errors errors) {
         if (errors.hasErrors()) {
             throw new DataNotValidatedException(errors.getFieldErrors());
@@ -49,6 +53,7 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCustomerById(@PathVariable("id") Integer customerId) {
         customerService.deleteCustomerById(customerId);
         return new ResponseEntity<>("Customer with id " + customerId + " was successfully deleted", HttpStatus.OK);

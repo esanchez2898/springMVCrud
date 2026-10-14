@@ -50,6 +50,14 @@ public class UserEntity implements UserDetails, Serializable {
         this.roles = roles;
     }
 
+    public UserEntity(String firstname, String lastname, String email, String password, byte enabled) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+    }
+
     public Integer getId() {
         return id;
     }

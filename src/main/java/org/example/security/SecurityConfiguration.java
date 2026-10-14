@@ -68,14 +68,16 @@ public class SecurityConfiguration {
                         // Accessible only to unauthenticated users.
                         .requestMatchers(
                                 "/api/user/login",
-                                "/api/auth/requestPasswordChange/**"
+                                "/api/auth/requestPasswordChange/**",
+                                "/api/customer/register"
                         ).anonymous()
 
                         // Publicly accessible endpoints.
                         .requestMatchers(
                                 "/api/health",
                                 "/prometheus",
-                                "/api/categories/**"
+                                "/api/categories/**",
+                                "/api/products/**"
                         ).permitAll()
 
                         // All other endpoints require authentication.

@@ -6,6 +6,7 @@ import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.service.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,26 +23,29 @@ public class AddressController {
     }
 
     @GetMapping
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<AddressDto>> getAllAddress() {
         return new ResponseEntity<>(addressService.getAllAddresses(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<AddressDto> getAddressById(@PathVariable("id") Integer addressId) {
         return new ResponseEntity<>(addressService.getAddressById(addressId), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<AddressDto> addAddress(@RequestBody @Valid AddressDto addressDto, Errors errors) {
-
-        if (errors.hasErrors()) {
-            throw new DataNotValidatedException(errors.getFieldErrors());
-        }
-
-        return new ResponseEntity<>(addressService.addAddress(addressDto), HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<AddressDto> addAddress(@RequestBody @Valid AddressDto addressDto, Errors errors) {
+//
+//        if (errors.hasErrors()) {
+//            throw new DataNotValidatedException(errors.getFieldErrors());
+//        }
+//
+//        return new ResponseEntity<>(addressService.addAddress(addressDto), HttpStatus.CREATED);
+//    }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_USER')")
     public ResponseEntity<AddressDto> updateAddress(@PathVariable("id") Integer addressId, @RequestBody @Valid AddressDto addressDto, Errors errors) {
 
         if (errors.hasErrors()) {
@@ -51,13 +55,11 @@ public class AddressController {
         return new ResponseEntity<>(addressService.updateAddress(addressId, addressDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteAddressById(@PathVariable("id") Integer addressId) {
-
-        addressService.deleteAddressById(addressId);
-        return new ResponseEntity<>("Address with ID " + addressId + " was deleted successfully.", HttpStatus.OK);
-    }
-
-
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity<String> deleteAddressById(@PathVariable("id") Integer addressId) {
+//
+//        addressService.deleteAddressById(addressId);
+//        return new ResponseEntity<>("Address with ID " + addressId + " was deleted successfully.", HttpStatus.OK);
+//    }
 
 }

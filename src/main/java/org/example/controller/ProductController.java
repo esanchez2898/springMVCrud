@@ -8,6 +8,7 @@ import org.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +42,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ProductDto> addProduct(@RequestBody @Valid ProductDto productDto, Errors errors) {
 
         if (errors.hasErrors()) {
@@ -52,6 +54,7 @@ public class ProductController {
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Integer productId, @RequestBody @Valid ProductDto productDto, Errors errors) {
         if (errors.hasErrors()) {
             throw new DataNotValidatedException(errors.getFieldErrors());
@@ -63,6 +66,7 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer productId) {
 
         productService.deleteProductById(productId);

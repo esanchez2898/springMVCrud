@@ -11,6 +11,7 @@ import org.example.service.UserService;
 import org.example.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -36,22 +37,24 @@ public class UserController {
 
 
     @GetMapping
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize(value = "hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserDto> getUserById(@PathVariable("id") Integer userId) {
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<UserDto> addNewUser(@RequestBody @Valid UserDto userDto, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new DataNotValidatedException(errors.getFieldErrors());
-        }
-        return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<UserDto> addNewUser(@RequestBody @Valid UserDto userDto, Errors errors) {
+//        if (errors.hasErrors()) {
+//            throw new DataNotValidatedException(errors.getFieldErrors());
+//        }
+//        return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
+//    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable("id") Integer userId, @RequestBody @Valid UserDto userDto, Errors errors) {
@@ -61,11 +64,11 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(userId, userDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable("id") Integer userId) {
-        userService.deleteUserById(userId);
-        return new ResponseEntity<>("User with id " + userId + " was successfully deleted", HttpStatus.OK);
-    }
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity<String> deleteUserById(@PathVariable("id") Integer userId) {
+//        userService.deleteUserById(userId);
+//        return new ResponseEntity<>("User with id " + userId + " was successfully deleted", HttpStatus.OK);
+//    }
 
 
     @PostMapping(value = "/login")
