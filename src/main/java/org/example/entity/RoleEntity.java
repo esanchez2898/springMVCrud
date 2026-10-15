@@ -21,6 +21,10 @@ public class RoleEntity implements GrantedAuthority, Serializable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles")
     private List<UserEntity> users;
 
+    public RoleEntity(String roleName) {
+        this.roleName = roleName;
+    }
+
     @Override
     public @Nullable String getAuthority() {
         return roleName;

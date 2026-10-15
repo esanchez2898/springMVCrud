@@ -1,6 +1,5 @@
 package org.example.service.impl;
 
-import lombok.AllArgsConstructor;
 import org.example.converter.TempConverter;
 import org.example.dto.CategoryDto;
 import org.example.entity.CategoryEntity;
@@ -8,6 +7,7 @@ import org.example.exception.exceptions.CategoryNotFoundException;
 import org.example.exception.exceptions.DuplicateFoundException;
 import org.example.repository.CategoryRepository;
 import org.example.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +17,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final TempConverter tempConverter;
+
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository, TempConverter tempConverter) {
+        this.categoryRepository = categoryRepository;
+        this.tempConverter = tempConverter;
+    }
 
     @Override
     @Transactional(readOnly = true)

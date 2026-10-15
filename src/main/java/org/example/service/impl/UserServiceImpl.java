@@ -121,11 +121,7 @@ public class UserServiceImpl implements UserService {
 
         String roleName = "ROLE_USER";
 
-        RoleEntity roleEntity = roleRepository.findByName(roleName).orElse(null);
-
-        if (roleEntity == null ) {
-            throw new InstanceNotFoundException("Role " + roleName + " was not found");
-        }
+        RoleEntity roleEntity = roleRepository.findByName(roleName).orElseThrow(() -> new InstanceNotFoundException("Role " + roleName + " was not found"));
 
         List<RoleEntity> roles = new ArrayList<>();
         roles.add(roleEntity);

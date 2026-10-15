@@ -1,6 +1,5 @@
 package org.example.service.impl;
 
-import lombok.AllArgsConstructor;
 import org.example.converter.TempConverter;
 import org.example.dto.ProductDto;
 import org.example.entity.ProductEntity;
@@ -9,6 +8,7 @@ import org.example.exception.exceptions.ProductNotFoundException;
 import org.example.repository.ProductRepository;
 import org.example.service.CategoryService;
 import org.example.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,12 +17,19 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final TempConverter tempConverter;
     private final CategoryService categoryService;
+
+    @Autowired
+    public ProductServiceImpl(ProductRepository productRepository, TempConverter tempConverter, CategoryService categoryService) {
+        this.productRepository = productRepository;
+        this.tempConverter = tempConverter;
+        this.categoryService = categoryService;
+    }
+
 
     @Override
     public List<ProductDto> getAllProducts() {
