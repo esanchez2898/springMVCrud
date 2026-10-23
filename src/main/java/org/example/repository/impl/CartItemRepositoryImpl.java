@@ -3,6 +3,7 @@ package org.example.repository.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.example.entity.CartItemEntity;
 import org.example.repository.CartItemRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Transactional
 public class CartItemRepositoryImpl implements CartItemRepository {
 
     @PersistenceContext

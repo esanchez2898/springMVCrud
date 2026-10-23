@@ -17,16 +17,13 @@ public class CustomerDto implements Serializable {
     @Size(max = 12)
     private String customerPhone;
 
-    @NotNull
-    @Positive
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer addressId;
 
-    @NotNull
-    @Positive
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer userId;
 
-    @NotNull
-    @Positive
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer cartId;
 
     public CustomerDto() {

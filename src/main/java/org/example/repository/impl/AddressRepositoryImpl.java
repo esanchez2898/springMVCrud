@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.example.entity.AddressEntity;
 import org.example.entity.CategoryEntity;
 import org.example.repository.AddressRepository;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Transactional
 public class AddressRepositoryImpl implements AddressRepository {
 
     @PersistenceContext

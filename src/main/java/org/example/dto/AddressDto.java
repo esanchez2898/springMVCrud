@@ -10,7 +10,7 @@ public class AddressDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
-    @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer customerId;
 
     @NotEmpty

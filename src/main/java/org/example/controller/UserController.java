@@ -77,6 +77,7 @@ public class UserController {
             throw new DataNotValidatedException(errors.getFieldErrors());
         }
 
+
         Optional<Authentication> authenticationOptional = userService.authentocationUser(request);
 
         if (authenticationOptional.isEmpty()) {

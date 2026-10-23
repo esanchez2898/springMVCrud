@@ -3,6 +3,7 @@ package org.example.repository.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.example.entity.ProductEntity;
 import org.example.entity.RoleEntity;
 import org.example.entity.UserEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Transactional
 public class UserRepositoryImpl implements UserRepository {
 
     @PersistenceContext
@@ -38,8 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
         CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> root = criteriaQuery.from(UserEntity.class);
 
-        root.fetch("roles", JoinType.INNER);
-
+        // root.fetch("roles", JoinType.INNER);
 
         Join<UserEntity, ?> rolesJoin = root.join("roles", JoinType.INNER); // -> sql join
 

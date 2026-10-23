@@ -3,6 +3,7 @@ package org.example.security;
 import java.io.IOException;
 import java.util.Optional;
 
+import jakarta.inject.Provider;
 import org.example.converter.TempConverter;
 import org.example.dto.UserDto;
 import org.example.service.UserService;
@@ -28,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     /** Service for fetching user details from the database or domain layer. */
-    private UserService userService;
+    private Provider<UserService> userServiceProvider;
 
     /** Utility component for parsing, validating, and extracting claims from JWTs. */
     private JwtUtil jwtUtil;
@@ -41,17 +42,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      *
      * @param jwtUtil Utility instance for JWT operations.
      * @param tempConverter Converter instance for DTO/Entity transformations.
-     * @param userService Service instance for user lookups.
+     * @param userServiceProvider Service instance for user lookups.
      */
     @Autowired
     private void initialize(
             JwtUtil jwtUtil,
             TempConverter tempConverter,
-            UserService userService) {
+            Provider<UserService> userServiceProvider) {
 
         this.jwtUtil = jwtUtil;
         this.tempConverter = tempConverter;
-        this.userService = userService;
+        this.userServiceProvider = userServiceProvider;
     }
 
     /**
@@ -122,7 +123,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // Fetch the user DTO using the email or username.
         //UserDto userDto = userService.getUserByEmailOrUsername(email);
-        UserDto userDto = userService.getUserByEmal(email);
+        UserDto userDto = userServiceProvider.get().getUserByEmal(email);
 
         // Convert the DTO to a Spring Security UserDetails implementation.
         //UserDetails userDetails = tempConverter.userDtoToEntity(userDto);

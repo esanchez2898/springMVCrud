@@ -72,6 +72,8 @@ public class SecurityConfiguration {
                                 "/api/customer/register"
                         ).anonymous()
 
+                        .requestMatchers("/api/cart/**").hasAuthority("ROLE_USER")
+
                         // Publicly accessible endpoints.
                         .requestMatchers(
                                 "/api/health",

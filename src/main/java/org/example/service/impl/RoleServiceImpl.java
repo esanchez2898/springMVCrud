@@ -5,15 +5,19 @@ import org.example.dto.RoleDto;
 import org.example.entity.RoleEntity;
 import org.example.repository.RoleRepository;
 import org.example.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final TempConverter converter;
 
+    @Autowired
     public RoleServiceImpl(RoleRepository roleRepository, TempConverter converter) {
         this.roleRepository = roleRepository;
         this.converter = converter;

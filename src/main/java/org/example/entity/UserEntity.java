@@ -27,7 +27,7 @@ public class UserEntity implements UserDetails, Serializable {
     @Column(nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String password;
 
     private byte enabled;

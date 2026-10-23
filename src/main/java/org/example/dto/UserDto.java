@@ -28,12 +28,16 @@ public class UserDto implements Serializable {
 
     @NotEmpty
     @Size(max = 50)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private byte enabled;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Integer> rolesIds;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String authToken;
 
     public UserDto() {

@@ -6,6 +6,8 @@ import org.example.exception.exceptions.InstanceNotFoundException;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class LoadData  { //implements CommandLineRunner {
+public class LoadData {// implements ApplicationListener<ContextRefreshedEvent> {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -34,6 +36,14 @@ public class LoadData  { //implements CommandLineRunner {
 //        addRolesData();
 //        addAdminData();
 //    }
+//
+//    @Override
+//    public void onApplicationEvent(ContextRefreshedEvent event) {
+//        addRolesData();
+//        addAdminData();
+//    }
+
+
 
 
     public void addRolesData() {
@@ -68,6 +78,7 @@ public class LoadData  { //implements CommandLineRunner {
         }
 
     }
+
 
 
 }

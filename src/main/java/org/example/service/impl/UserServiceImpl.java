@@ -13,6 +13,7 @@ import org.example.exception.exceptions.UserNotFoundException;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TempConverter converte, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;

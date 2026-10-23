@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import jakarta.inject.Provider;
 import org.example.converter.TempConverter;
 import org.example.dto.CartDto;
 import org.example.dto.CustomerDto;
@@ -12,6 +13,7 @@ import org.example.service.CartService;
 import org.example.service.CustomerService;
 import org.example.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,14 +23,17 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final CustomerService customerService;
+
+    private final Provider<CustomerService> customerServiceProvider;
+
     private final UserService userService;
     private final TempConverter converter;
 
-    public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository, CustomerService customerService, UserService userService, TempConverter converter) {
+    @Autowired
+    public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository, Provider<CustomerService> customerServiceProvider, UserService userService, TempConverter converter) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
-        this.customerService = customerService;
+        this.customerServiceProvider = customerServiceProvider;
         this.userService = userService;
         this.converter = converter;
     }
@@ -55,8 +60,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartDto clearCart() {
-        UserDto currentUser = userService.getCurrentUser();
-        CustomerDto customerDto = customerService.getCustomerByUserId(currentUser.getId());
+        CustomerDto customerDto = customerServiceProvider.get().getCurrentCustomer();
 
         Integer cartId = customerDto.getCartId();
 
@@ -89,6 +93,15 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    @Override
+    public CartDto provideMyCart() {
+
+        CustomerDto customer = customerServiceProvider.get().getCurrentCustomer();
+
+        Integer cartId = customer.getCartId();
+
+        return getCartById(cartId);
+    }
 
 
 }

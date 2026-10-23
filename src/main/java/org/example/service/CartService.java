@@ -8,5 +8,6 @@ public interface CartService {
     CartDto addCart(CartDto cart);
     CartDto clearCart();
     void refreshCartState(Integer cartId);
+    CartDto provideMyCart();
 
 }

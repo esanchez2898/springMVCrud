@@ -13,6 +13,7 @@ import org.example.service.AddressService;
 import org.example.service.CartService;
 import org.example.service.CustomerService;
 import org.example.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserService userService;
     private final AddressService addressService;
 
+    @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, CartService cartService, TempConverter converter, UserService userService, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.cartService = cartService;

@@ -5,6 +5,7 @@ import org.example.dto.CustomerDto;
 import org.example.dto.RegistrationForm;
 import org.example.exception.exceptions.DataNotValidatedException;
 import org.example.service.CustomerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @Autowired
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }

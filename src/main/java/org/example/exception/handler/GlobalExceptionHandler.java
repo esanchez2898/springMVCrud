@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.security.auth.login.CredentialNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,6 +111,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InstanceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleInstanceNotFoundException(InstanceNotFoundException exc) {
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        exc.getMessage()),
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CredentialNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCredentialNotFoundException(CredentialNotFoundException exc) {
         return new ResponseEntity<>(
                 new ErrorResponse(
                         LocalDateTime.now(),

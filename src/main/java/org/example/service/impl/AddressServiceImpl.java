@@ -6,6 +6,7 @@ import org.example.entity.AddressEntity;
 import org.example.exception.exceptions.AddressNotFoundException;
 import org.example.repository.AddressRepository;
 import org.example.service.AddressService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final TempConverter converter;
 
+    @Autowired
     public AddressServiceImpl(AddressRepository addressRepository, TempConverter converter) {
         this.addressRepository = addressRepository;
         this.converter = converter;
